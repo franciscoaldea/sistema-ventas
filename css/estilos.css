@@ -1,38 +1,114 @@
+/* Variables CSS para facilitar la gestión de colores */
+:root {
+    --color-primario: #003366; /* Azul oscuro */
+    --color-secundario: #004080; /* Azul ligeramente más claro para botones/hover */
+    --color-fondo: #ffffff; /* Blanco */
+    --color-texto: #333333; /* Gris oscuro para legibilidad */
+    --color-borde: #dddddd; /* Gris claro para bordes */
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
     padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
-form input, button {
+h2 {
+    color: var(--color-primario);
+    border-bottom: 2px solid var(--color-primario);
+    padding-bottom: 10px;
+}
+
+/* Estilo para el contenedor principal (formularios y tablas) */
+form, table {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+/* Campos de entrada y botones principales */
+form input, form button {
     display: block;
+    width: 100%;
     margin: 10px 0;
-    padding: 8px;
+    padding: 10px;
+    box-sizing: border-box; /* Importante para que el padding no desborde el ancho 100% */
+    border: 1px solid var(--color-borde);
+    border-radius: 4px;
 }
 
+form button[type="submit"] {
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+form button[type="submit"]:hover {
+    background-color: var(--color-secundario);
+}
+
+p#total-container {
+    margin-top: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--color-primario);
+}
+
+
+/* TABLA */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    background: var(--color-fondo);
 }
 
 th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
+    border: 1px solid var(--color-borde);
+    padding: 12px;
     text-align: left;
 }
 
-th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
+thead th {
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+    font-weight: normal;
 }
 
+/* Filas alternas para mejor lectura */
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Botones de acción dentro de la tabla */
 table button {
     display: inline-block;
-    margin: 0 4px;
-    padding: 4px 8px;
+    margin: 0 5px;
+    padding: 6px 10px;
     font-size: 0.8em;
     cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    color: var(--color-fondo);
 }
 
+table button:first-child { /* Botón Editar */
+    background-color: #ff9800; /* Naranja para editar */
+}
 
+table button:last-child { /* Botón Eliminar */
+    background-color: #f44336; /* Rojo para eliminar */
+}
+
+table button:hover {
+    opacity: 0.8;
+}
