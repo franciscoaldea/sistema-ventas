@@ -1,3 +1,6 @@
+// ============================
+// REFERENCIAS A ELEMENTOS
+// ============================
 const form = document.getElementById("ventaForm");
 const tabla = document.getElementById("tablaVentas");
 const totalSpan = document.getElementById("total");
@@ -8,6 +11,9 @@ const cantidadInput = document.getElementById("cantidad");
 const precioInput = document.getElementById("precio");
 const editIdInput = document.getElementById("editId");
 
+// ============================
+// STORAGE
+// ============================
 function obtenerVentas() {
     return JSON.parse(localStorage.getItem("ventas")) || [];
 }
@@ -20,6 +26,9 @@ function generarID(ventas) {
     return ventas.length ? ventas[ventas.length - 1].id + 1 : 1;
 }
 
+// ============================
+// CALCULO TOTAL
+// ============================
 function calcularTotal() {
     const cantidad = Number(cantidadInput.value);
     const precio = Number(precioInput.value);
@@ -29,12 +38,16 @@ function calcularTotal() {
 cantidadInput.addEventListener("input", calcularTotal);
 precioInput.addEventListener("input", calcularTotal);
 
+// ============================
+// RENDER TABLA
+// ============================
 function renderVentas() {
     tabla.innerHTML = "";
     const ventas = obtenerVentas();
 
     ventas.forEach(v => {
         const tr = document.createElement("tr");
+
         tr.innerHTML = `
             <td>${v.id}</td>
             <td>${v.cliente}</td>
@@ -46,10 +59,14 @@ function renderVentas() {
                 <button onclick="borrarVenta(${v.id})">Eliminar</button>
             </td>
         `;
+
         tabla.appendChild(tr);
     });
 }
 
+// ============================
+// SUBMIT FORM
+// ============================
 form.addEventListener("submit", e => {
     e.preventDefault();
 
@@ -89,6 +106,9 @@ form.addEventListener("submit", e => {
     totalSpan.textContent = "0";
 });
 
+// ============================
+// BORRAR
+// ============================
 function borrarVenta(id) {
     if (!confirm("¿Seguro que querés eliminar esta venta?")) return;
 
@@ -97,6 +117,9 @@ function borrarVenta(id) {
     renderVentas();
 }
 
+// ============================
+// EDITAR
+// ============================
 function editarVenta(id) {
     const ventas = obtenerVentas();
     const venta = ventas.find(v => v.id === id);
@@ -110,4 +133,7 @@ function editarVenta(id) {
     editIdInput.value = id;
 }
 
+// ============================
+// INIT
+// ============================
 renderVentas();
