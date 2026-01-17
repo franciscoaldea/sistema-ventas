@@ -28,7 +28,7 @@ form.addEventListener("submit", e => {
     e.preventDefault();
 
     const venta = {
-        id: editando ?? Date.now(),
+        id: editando ?? ++ultimoId,
         cliente: clienteInput.value,
         producto: productoInput.value,
         precio: Number(precioInput.value),
@@ -45,6 +45,7 @@ form.addEventListener("submit", e => {
     }
 
     localStorage.setItem("ventas", JSON.stringify(ventas));
+    localStorage.setItem("ultimoId", JSON.stringify(ultimoId));
     form.reset();
     renderVentas();
 });
@@ -115,4 +116,5 @@ filtroFecha.addEventListener("change", renderVentas);
 
 // CARGAR AL INICIO
 renderVentas();
+
 
