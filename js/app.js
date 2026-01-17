@@ -1,4 +1,5 @@
 let ventas = JSON.parse(localStorage.getItem("ventas")) || [];
+let ultimoId = JSON.parse(localStorage.getItem("ultimoId")) || 0;
 let editando = null;
 
 // ELEMENTOS
@@ -114,3 +115,4 @@ filtroFecha.addEventListener("change", renderVentas);
 
 // CARGAR AL INICIO
 renderVentas();
+
