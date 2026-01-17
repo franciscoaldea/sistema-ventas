@@ -2,8 +2,11 @@ const form = document.getElementById("ventaForm");
 const tabla = document.getElementById("tablaVentas");
 const totalSpan = document.getElementById("total");
 
+const clienteInput = document.getElementById("cliente");
+const productoInput = document.getElementById("producto");
 const cantidadInput = document.getElementById("cantidad");
 const precioInput = document.getElementById("precio");
+const editIdInput = document.getElementById("editId");
 
 function obtenerVentas() {
     return JSON.parse(localStorage.getItem("ventas")) || [];
@@ -17,6 +20,15 @@ function generarID(ventas) {
     return ventas.length ? ventas[ventas.length - 1].id + 1 : 1;
 }
 
+function calcularTotal() {
+    const cantidad = Number(cantidadInput.value);
+    const precio = Number(precioInput.value);
+    totalSpan.textContent = cantidad * precio || 0;
+}
+
+cantidadInput.addEventListener("input", calcularTotal);
+precioInput.addEventListener("input", calcularTotal);
+
 function renderVentas() {
     tabla.innerHTML = "";
     const ventas = obtenerVentas();
@@ -29,40 +41,73 @@ function renderVentas() {
             <td>${v.producto}</td>
             <td>$${v.total}</td>
             <td>${v.fecha}</td>
+            <td>
+                <button onclick="editarVenta(${v.id})">Editar</button>
+                <button onclick="borrarVenta(${v.id})">Eliminar</button>
+            </td>
         `;
         tabla.appendChild(tr);
     });
-}
-
-cantidadInput.addEventListener("input", calcularTotal);
-precioInput.addEventListener("input", calcularTotal);
-
-function calcularTotal() {
-    const cantidad = Number(cantidadInput.value);
-    const precio = Number(precioInput.value);
-    totalSpan.textContent = cantidad * precio || 0;
 }
 
 form.addEventListener("submit", e => {
     e.preventDefault();
 
     const ventas = obtenerVentas();
+    const editId = editIdInput.value;
 
-    const nuevaVenta = {
-        id: generarID(ventas),
-        cliente: cliente.value,
-        producto: producto.value,
-        cantidad: Number(cantidad.value),
-        precio: Number(precio.value),
-        total: Number(cantidad.value) * Number(precio.value),
-        fecha: new Date().toLocaleDateString()
-    };
+    if (editId) {
+        // EDITAR
+        const index = ventas.findIndex(v => v.id == editId);
 
-    ventas.push(nuevaVenta);
+        ventas[index] = {
+            ...ventas[index],
+            cliente: clienteInput.value,
+            producto: productoInput.value,
+            cantidad: Number(cantidadInput.value),
+            precio: Number(precioInput.value),
+            total: Number(cantidadInput.value) * Number(precioInput.value)
+        };
+
+        editIdInput.value = "";
+    } else {
+        // CREAR
+        ventas.push({
+            id: generarID(ventas),
+            cliente: clienteInput.value,
+            producto: productoInput.value,
+            cantidad: Number(cantidadInput.value),
+            precio: Number(precioInput.value),
+            total: Number(cantidadInput.value) * Number(precioInput.value),
+            fecha: new Date().toLocaleDateString()
+        });
+    }
+
     guardarVentas(ventas);
     renderVentas();
     form.reset();
     totalSpan.textContent = "0";
 });
+
+function borrarVenta(id) {
+    if (!confirm("¿Seguro que querés eliminar esta venta?")) return;
+
+    const ventas = obtenerVentas().filter(v => v.id !== id);
+    guardarVentas(ventas);
+    renderVentas();
+}
+
+function editarVenta(id) {
+    const ventas = obtenerVentas();
+    const venta = ventas.find(v => v.id === id);
+
+    clienteInput.value = venta.cliente;
+    productoInput.value = venta.producto;
+    cantidadInput.value = venta.cantidad;
+    precioInput.value = venta.precio;
+    totalSpan.textContent = venta.total;
+
+    editIdInput.value = id;
+}
 
 renderVentas();
