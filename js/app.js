@@ -11,6 +11,11 @@ const cantidadInput = document.getElementById("cantidad");
 const precioInput = document.getElementById("precio");
 const editIdInput = document.getElementById("editId");
 
+const modoEdicion = document.getElementById("modoEdicion");
+const editandoIdSpan = document.getElementById("editandoId");
+const btnGuardar = document.getElementById("btnGuardar");
+const btnCancelar = document.getElementById("btnCancelar");
+
 // ============================
 // STORAGE
 // ============================
@@ -137,3 +142,4 @@ function editarVenta(id) {
 // INIT
 // ============================
 renderVentas();
+
