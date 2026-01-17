@@ -1,238 +1,116 @@
-// ============================
-// REFERENCIAS
-// ============================
+let ventas = JSON.parse(localStorage.getItem("ventas")) || [];
+let editando = null;
+
+// ELEMENTOS
 const form = document.getElementById("ventaForm");
 const tabla = document.getElementById("tablaVentas");
-const totalSpan = document.getElementById("total");
+const modoEdicion = document.getElementById("modoEdicion");
+const editandoId = document.getElementById("editandoId");
 
+// INPUTS
 const clienteInput = document.getElementById("cliente");
 const productoInput = document.getElementById("producto");
-const cantidadInput = document.getElementById("cantidad");
 const precioInput = document.getElementById("precio");
 const estadoInput = document.getElementById("estado");
-const editIdInput = document.getElementById("editId");
 
-const modoEdicion = document.getElementById("modoEdicion");
-const editandoIdSpan = document.getElementById("editandoId");
-const btnGuardar = document.getElementById("btnGuardar");
-const btnCancelar = document.getElementById("btnCancelar");
-
+// FILTROS
 const filtroCliente = document.getElementById("filtroCliente");
 const filtroFecha = document.getElementById("filtroFecha");
-const ordenarPor = document.getElementById("ordenarPor");
 
+// STATS
 const totalVendidoSpan = document.getElementById("totalVendido");
 const cantidadVentasSpan = document.getElementById("cantidadVentas");
 const ticketPromedioSpan = document.getElementById("ticketPromedio");
 
-const datalistClientes = document.getElementById("clientes");
-const datalistProductos = document.getElementById("productos");
-
-// ============================
-// STORAGE
-// ============================
-function obtenerVentas() {
-    return JSON.parse(localStorage.getItem("ventas")) || [];
-}
-
-function guardarVentas(ventas) {
-    localStorage.setItem("ventas", JSON.stringify(ventas));
-}
-
-function generarID(ventas) {
-    return ventas.length ? ventas[ventas.length - 1].id + 1 : 1;
-}
-
-// ============================
-// TOTAL EN TIEMPO REAL
-// ============================
-function calcularTotal() {
-    const c = Number(cantidadInput.value);
-    const p = Number(precioInput.value);
-    totalSpan.textContent = c * p || 0;
-}
-
-cantidadInput.addEventListener("input", calcularTotal);
-precioInput.addEventListener("input", calcularTotal);
-
-// ============================
-// RENDER TABLA + FILTROS + ORDEN
-// ============================
-function renderVentas() {
-    tabla.innerHTML = "";
-    let ventas = obtenerVentas();
-
-    if (filtroCliente.value) {
-        ventas = ventas.filter(v =>
-            v.cliente.toLowerCase().includes(filtroCliente.value.toLowerCase())
-        );
-    }
-
-    if (filtroFecha.value) {
-        ventas = ventas.filter(v => v.fechaISO === filtroFecha.value);
-    }
-
-    ventas.sort((a, b) => {
-        if (ordenarPor.value === "fecha") {
-            return new Date(b.fechaISO) - new Date(a.fechaISO);
-        }
-        return b[ordenarPor.value] - a[ordenarPor.value];
-    });
-
-    ventas.forEach(v => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${v.id}</td>
-            <td>${v.cliente}</td>
-            <td>${v.producto}</td>
-            <td>$${v.total}</td>
-            <td>${v.fecha}</td>
-            <td>${v.estado}</td>
-            <td>
-                <button onclick="editarVenta(${v.id})">Editar</button>
-                <button onclick="borrarVenta(${v.id})">Eliminar</button>
-            </td>
-        `;
-        tabla.appendChild(tr);
-    });
-
-    actualizarStats(ventas);
-}
-
-// ============================
-// ESTADÍSTICAS
-// ============================
-function actualizarStats(ventas) {
-    const total = ventas.reduce((acc, v) => acc + v.total, 0);
-    totalVendidoSpan.textContent = total;
-    cantidadVentasSpan.textContent = ventas.length;
-    ticketPromedioSpan.textContent =
-        ventas.length ? Math.round(total / ventas.length) : 0;
-}
-
-// ============================
-// FORM SUBMIT
-// ============================
+// GUARDAR / EDITAR
 form.addEventListener("submit", e => {
     e.preventDefault();
 
-    if (cantidadInput.value <= 0 || precioInput.value <= 0) {
-        alert("Cantidad y precio deben ser mayores a 0");
-        return;
-    }
+    const venta = {
+        id: editando ?? Date.now(),
+        cliente: clienteInput.value,
+        producto: productoInput.value,
+        precio: Number(precioInput.value),
+        estado: estadoInput.value,
+        fecha: new Date().toISOString().split("T")[0]
+    };
 
-    const ventas = obtenerVentas();
-    const editId = editIdInput.value;
-
-    if (editId) {
-        const index = ventas.findIndex(v => v.id == editId);
-        ventas[index] = {
-            ...ventas[index],
-            cliente: clienteInput.value,
-            producto: productoInput.value,
-            cantidad: Number(cantidadInput.value),
-            precio: Number(precioInput.value),
-            total: Number(cantidadInput.value) * Number(precioInput.value),
-            estado: estadoInput.value
-        };
-
-        salirEdicion();
+    if (editando) {
+        ventas = ventas.map(v => v.id === editando ? venta : v);
+        editando = null;
+        modoEdicion.style.display = "none";
     } else {
-        ventas.push({
-            id: generarID(ventas),
-            cliente: clienteInput.value,
-            producto: productoInput.value,
-            cantidad: Number(cantidadInput.value),
-            precio: Number(precioInput.value),
-            total: Number(cantidadInput.value) * Number(precioInput.value),
-            estado: estadoInput.value,
-            fecha: new Date().toLocaleDateString(),
-            fechaISO: new Date().toISOString().split("T")[0]
-        });
+        ventas.push(venta);
     }
 
-    guardarVentas(ventas);
-    actualizarDatalists(ventas);
-    renderVentas();
+    localStorage.setItem("ventas", JSON.stringify(ventas));
     form.reset();
-    totalSpan.textContent = "0";
+    renderVentas();
 });
 
-// ============================
-// EDITAR / BORRAR
-// ============================
-function editarVenta(id) {
-    const venta = obtenerVentas().find(v => v.id === id);
+// RENDER TABLA
+function renderVentas() {
+    tabla.innerHTML = "";
 
-    clienteInput.value = venta.cliente;
-    productoInput.value = venta.producto;
-    cantidadInput.value = venta.cantidad;
-    precioInput.value = venta.precio;
-    estadoInput.value = venta.estado;
-    totalSpan.textContent = venta.total;
+    let filtradas = ventas.filter(v => {
+        return (
+            v.cliente.toLowerCase().includes(filtroCliente.value.toLowerCase()) &&
+            (!filtroFecha.value || v.fecha === filtroFecha.value)
+        );
+    });
 
-    editIdInput.value = id;
+    filtradas.forEach(v => {
+        tabla.innerHTML += `
+            <tr>
+                <td>${v.id}</td>
+                <td>${v.cliente}</td>
+                <td>${v.producto}</td>
+                <td>$${v.precio}</td>
+                <td>${v.fecha}</td>
+                <td>${v.estado}</td>
+                <td>
+                    <button onclick="editarVenta(${v.id})">Editar</button>
+                    <button onclick="eliminarVenta(${v.id})">Eliminar</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    actualizarStats(filtradas);
+}
+
+// EDITAR
+window.editarVenta = function(id) {
+    const v = ventas.find(v => v.id === id);
+    clienteInput.value = v.cliente;
+    productoInput.value = v.producto;
+    precioInput.value = v.precio;
+    estadoInput.value = v.estado;
+
+    editando = id;
     modoEdicion.style.display = "block";
-    editandoIdSpan.textContent = id;
-    btnGuardar.textContent = "Guardar cambios";
-    btnCancelar.style.display = "inline-block";
-}
+    editandoId.textContent = id;
+};
 
-function borrarVenta(id) {
+// ELIMINAR
+window.eliminarVenta = function(id) {
     if (!confirm("¿Eliminar esta venta?")) return;
-    guardarVentas(obtenerVentas().filter(v => v.id !== id));
+    ventas = ventas.filter(v => v.id !== id);
+    localStorage.setItem("ventas", JSON.stringify(ventas));
     renderVentas();
+};
+
+// STATS
+function actualizarStats(lista) {
+    const total = lista.reduce((acc, v) => acc + v.precio, 0);
+    totalVendidoSpan.textContent = total;
+    cantidadVentasSpan.textContent = lista.length;
+    ticketPromedioSpan.textContent = lista.length ? Math.round(total / lista.length) : 0;
 }
 
-// ============================
-// CANCELAR EDICIÓN
-// ============================
-btnCancelar.addEventListener("click", salirEdicion);
+// FILTROS
+filtroCliente.addEventListener("input", renderVentas);
+filtroFecha.addEventListener("change", renderVentas);
 
-function salirEdicion() {
-    editIdInput.value = "";
-    modoEdicion.style.display = "none";
-    btnGuardar.textContent = "Guardar venta";
-    btnCancelar.style.display = "none";
-    form.reset();
-    totalSpan.textContent = "0";
-}
-
-// ============================
-// DATALISTS CLIENTES / PRODUCTOS
-// ============================
-function actualizarDatalists(ventas) {
-    const clientes = [...new Set(ventas.map(v => v.cliente))];
-    const productos = [...new Set(ventas.map(v => v.producto))];
-
-    datalistClientes.innerHTML = clientes.map(c => `<option value="${c}">`).join("");
-    datalistProductos.innerHTML = productos.map(p => `<option value="${p}">`).join("");
-}
-
-// ============================
-// BACKUP / RESTAURAR
-// ============================
-function exportarBackup() {
-    const data = localStorage.getItem("ventas") || "[]";
-    const blob = new Blob([data], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "backup_ventas.json";
-    a.click();
-}
-
-function importarBackup(e) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-        localStorage.setItem("ventas", reader.result);
-        renderVentas();
-    };
-    reader.readAsText(file);
-}
-
-// ============================
-// INIT
-// ============================
+// CARGAR AL INICIO
 renderVentas();
-actualizarDatalists(obtenerVentas());
