@@ -134,6 +134,10 @@ function editarVenta(id) {
     cantidadInput.value = venta.cantidad;
     precioInput.value = venta.precio;
     totalSpan.textContent = venta.total;
+    modoEdicion.style.display = "block";
+    editandoIdSpan.textContent = id;
+    btnGuardar.textContent = "Guardar cambios";
+    btnCancelar.style.display = "inline-block";
 
     editIdInput.value = id;
 }
@@ -142,4 +146,5 @@ function editarVenta(id) {
 // INIT
 // ============================
 renderVentas();
+
 
