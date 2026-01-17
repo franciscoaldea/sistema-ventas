@@ -19,6 +19,15 @@
     <p>Total: $<span id="total">0</span></p>
 
     <button type="submit">Guardar venta</button>
+        <p id="modoEdicion" style="display:none; color:#c00;">
+      Editando venta #<span id="editandoId"></span>
+    </p>
+    
+    <button type="submit" id="btnGuardar">Guardar venta</button>
+    <button type="button" id="btnCancelar" style="display:none;">
+      Cancelar edición
+    </button>
+
 </form>
 
 <h2>Ventas registradas</h2>
@@ -43,6 +52,7 @@
 <script src="js/app.js"></script>
 </body>
 </html>
+
 
 
 
