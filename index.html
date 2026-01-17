@@ -2,58 +2,70 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Ventas</title>
+    <title>Gestión de Ventas</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
 
-<h2>Nueva venta</h2>
+    <h1>Sistema de Gestión de Ventas</h1>
 
-<form id="ventaForm">
-    <input type="hidden" id="editId">
-    <input type="text" id="cliente" placeholder="Cliente" required>
-    <input type="text" id="producto" placeholder="Producto" required>
-    <input type="number" id="cantidad" placeholder="Cantidad" required>
-    <input type="number" id="precio" placeholder="Precio" required>
-
-    <p>Total: $<span id="total">0</span></p>
-
-    <button type="submit">Guardar venta</button>
-        <p id="modoEdicion" style="display:none; color:#c00;">
-      Editando venta #<span id="editandoId"></span>
+    <!-- MODO EDICIÓN -->
+    <p id="modoEdicion" style="display:none; color:red; font-weight:bold;">
+        Editando venta ID: <span id="editandoId"></span>
     </p>
-    
-    <button type="submit" id="btnGuardar">Guardar venta</button>
-    <button type="button" id="btnCancelar" style="display:none;">
-      Cancelar edición
-    </button>
 
-</form>
+    <!-- FORMULARIO -->
+    <form id="ventaForm">
+        <input type="text" id="cliente" placeholder="Nombre del cliente" required>
+        <input type="text" id="producto" placeholder="Producto" required>
+        <input type="number" id="precio" placeholder="Precio" required min="1">
 
-<h2>Ventas registradas</h2>
+        <select id="estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Pagado">Pagado</option>
+            <option value="Cancelado">Cancelado</option>
+        </select>
 
-<table border="1">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Producto</th>
-            <th>Total</th>
-            <th>Fecha</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
+        <button type="submit">Guardar venta</button>
+    </form>
 
-    <tbody id="tablaVentas"></tbody>
-</table>
+    <hr>
 
+    <!-- FILTROS -->
+    <h3>Filtros</h3>
+    <input type="text" id="filtroCliente" placeholder="Buscar por cliente">
+    <input type="date" id="filtroFecha">
 
+    <hr>
 
-<script src="js/app.js"></script>
+    <!-- ESTADÍSTICAS -->
+    <h3>Estadísticas</h3>
+    <div id="stats">
+        <p>Total vendido: $<span id="totalVendido">0</span></p>
+        <p>Cantidad de ventas: <span id="cantidadVentas">0</span></p>
+        <p>Ticket promedio: $<span id="ticketPromedio">0</span></p>
+    </div>
+
+    <hr>
+
+    <!-- TABLA -->
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tablaVentas">
+            <!-- JS inserta filas acá -->
+        </tbody>
+    </table>
+
+    <script src="js/app.js"></script>
 </body>
 </html>
-
-
-
-
-
