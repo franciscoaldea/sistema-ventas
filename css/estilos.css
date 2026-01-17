@@ -112,3 +112,22 @@ table button:last-child { /* Botón Eliminar */
 table button:hover {
     opacity: 0.8;
 }
+
+.nav {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.nav a {
+    text-decoration: none;
+    padding: 8px 14px;
+    background: #003366;
+    color: white;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.nav a.activo {
+    background: #0059b3;
+}
