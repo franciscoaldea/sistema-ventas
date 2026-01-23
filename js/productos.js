@@ -8,7 +8,8 @@ const modoEdicion = document.getElementById("modoEdicionProducto");
 const editandoId = document.getElementById("editandoProductoId");
 
 const nombreInput = document.getElementById("nombre");
-const precioInput = document.getElementById("precio");
+const precioCompraInput = document.getElementById("precioCompra");
+const precioVentaInput = document.getElementById("precioVenta");
 const fotoInput = document.getElementById("foto");
 
 form.addEventListener("submit", e => {
@@ -17,7 +18,8 @@ form.addEventListener("submit", e => {
     const producto = {
         id: editando ?? ++ultimoIdProducto,
         nombre: nombreInput.value,
-        precio: Number(precioInput.value),
+        precioCompra: Number(precioCompraInput.value),
+        precioVenta: Number(precioVentaInput.value),
         foto: fotoInput.value || ""
     };
 
@@ -47,7 +49,8 @@ function renderProductos() {
                     ${p.foto ? `<img src="${p.foto}" width="50">` : "—"}
                 </td>
                 <td>${p.nombre}</td>
-                <td>$${p.precio}</td>
+                <td>$${p.precioCompra}</td>
+                <td>$${p.precioVenta}</td>
                 <td>
                     <button onclick="editarProducto(${p.id})">Editar</button>
                     <button onclick="eliminarProducto(${p.id})">Eliminar</button>
@@ -61,7 +64,8 @@ window.editarProducto = function(id) {
     const p = productos.find(p => p.id === id);
 
     nombreInput.value = p.nombre;
-    precioInput.value = p.precio;
+    precioCompraInput.value = p.precioCompra;
+    precioVentaInput.value = p.precioVenta;
     fotoInput.value = p.foto;
 
     editando = id;
@@ -78,4 +82,3 @@ window.eliminarProducto = function(id) {
 };
 
 renderProductos();
-
