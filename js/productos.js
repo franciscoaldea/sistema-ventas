@@ -38,6 +38,13 @@ form.addEventListener("submit", e => {
     renderProductos();
 });
 
+function precioAK(valor) {
+    return Math.round(
+        parseFloat(valor.replace("k", "").replace(",", ".")) * 1000
+    );
+}
+
+
 function renderProductos() {
     tabla.innerHTML = "";
 
